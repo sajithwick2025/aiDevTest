@@ -192,7 +192,68 @@ namespace aiCorporation.NewImproved
         /************************************************************/
         public SalesAgentList ToSalesAgentList()
         {
-            throw new NotImplementedException("You must implement this function");
+            SalesAgentList salReturnSalesAgentList;
+            SalesAgentBuilder saSalesAgent;
+            SalesAgentListBuilder lsaSalesAgentList;
+            BankAccountBuilder baBankAccount;
+            BankAccountListBuilder lbaBankAccountList;
+            ClientBuilder cClient;
+            ClientListBuilder lcClientList;
+            IList<IGrouping<(string szSalesAgentName, string szSalesAgentEmailAddress), SalesAgentFileRecord>> saRecordGroupList;
+            IList<IGrouping<(string szClientName, string szClientIdentifier), SalesAgentFileRecord>> csaRecordGroupList;
+
+            try
+            {
+                lsaSalesAgentList = new SalesAgentListBuilder();
+
+                // Grouping the Main List by SalesAgent to mnimize iterations. 
+                saRecordGroupList = m_lsafrSalesAgentFileRecordList.GroupBy(saFileRecord => (szSalesAgentName: saFileRecord.SalesAgentName, szSalesAgentEmailAddress: saFileRecord.SalesAgentEmailAddress)).ToList();
+
+                foreach (var saRecordGroup in saRecordGroupList)
+                {
+                    lcClientList = new ClientListBuilder();
+
+                    csaRecordGroupList = saRecordGroup.GroupBy(csaFileRecord => (szClientName: csaFileRecord.ClientName, szClientIdentifier: csaFileRecord.ClientIdentifier)).ToList();
+
+                    foreach (var csaRecordGroup in csaRecordGroupList)
+                    {
+
+                        lbaBankAccountList = new BankAccountListBuilder();
+
+                        foreach (var saFileRecord in csaRecordGroup)
+                        {
+                            baBankAccount = new BankAccountBuilder();
+                            baBankAccount.BankName = saFileRecord.BankName;
+                            baBankAccount.AccountNumber = saFileRecord.AccountNumber;
+                            baBankAccount.SortCode = saFileRecord.SortCode;
+                            baBankAccount.Currency = saFileRecord.Currency;
+                            lbaBankAccountList.Add(baBankAccount);
+                        }
+
+                        cClient = new ClientBuilder();
+                        cClient.ClientName = csaRecordGroup.Key.szClientName;
+                        cClient.ClientIdentifier = csaRecordGroup.Key.szClientIdentifier;
+                        cClient.BankAccountList = lbaBankAccountList;
+                        lcClientList.Add(cClient);
+                    }
+
+                    saSalesAgent = new SalesAgentBuilder();
+                    saSalesAgent.SalesAgentName = saRecordGroup.Key.szSalesAgentName;
+                    saSalesAgent.SalesAgentEmailAddress = saRecordGroup.Key.szSalesAgentEmailAddress;
+                    saSalesAgent.ClientList = lcClientList;
+                    lsaSalesAgentList.Add(saSalesAgent);
+                }
+                salReturnSalesAgentList = new SalesAgentList(lsaSalesAgentList.GetListOfSalesAgentObjects());
+            }
+            finally
+            {
+                baBankAccount = null;
+                cClient = null;
+                saSalesAgent = null;
+                lsaSalesAgentList = null;
+            }
+            return (salReturnSalesAgentList);
+            // throw new NotImplementedException("You must implement this function");
         }
 
         public SalesAgentFileRecordList(List<SalesAgentFileRecord> lsafrSalesAgentFileRecordList)

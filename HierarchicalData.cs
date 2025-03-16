@@ -377,7 +377,11 @@ namespace aiCorporation.NewImproved
             get { return (m_szSalesAgentEmailAddress); }
             set { m_szSalesAgentEmailAddress = value; }
         }
-        public ClientListBuilder ClientList { get { return (m_clClientList); } }
+        public ClientListBuilder ClientList 
+        { 
+            get { return (m_clClientList); }
+            set { m_clClientList = value; }
+        }
 
         public SalesAgent ToSalesAgent()
         {
@@ -479,7 +483,11 @@ namespace aiCorporation.NewImproved
             get { return (m_szClientIdentifier); }
             set { m_szClientIdentifier = value; }
         }
-        public BankAccountListBuilder BankAccountList { get { return (m_balBankAccountList); } }
+        public BankAccountListBuilder BankAccountList 
+        { 
+            get { return (m_balBankAccountList); }
+            set { m_balBankAccountList = value; }
+        }
 
         public Client ToClient()
         {
