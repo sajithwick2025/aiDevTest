@@ -199,21 +199,19 @@ namespace aiCorporation.NewImproved
             BankAccountListBuilder lbaBankAccountList;
             ClientBuilder cClient;
             ClientListBuilder lcClientList;
-            IList<IGrouping<(string szSalesAgentName, string szSalesAgentEmailAddress), SalesAgentFileRecord>> saRecordGroupList;
-            IList<IGrouping<(string szClientName, string szClientIdentifier), SalesAgentFileRecord>> csaRecordGroupList;
+            IEnumerable<IGrouping<(string szSalesAgentName, string szSalesAgentEmailAddress), SalesAgentFileRecord>> saRecordGroupList;
+            IEnumerable<IGrouping<(string szClientName, string szClientIdentifier), SalesAgentFileRecord>> csaRecordGroupList;
 
-            try
-            {
                 lsaSalesAgentList = new SalesAgentListBuilder();
 
-                // Grouping the Main List by SalesAgent to mnimize iterations. 
-                saRecordGroupList = m_lsafrSalesAgentFileRecordList.GroupBy(saFileRecord => (szSalesAgentName: saFileRecord.SalesAgentName, szSalesAgentEmailAddress: saFileRecord.SalesAgentEmailAddress)).ToList();
+                // Grouping the Main List by SalesAgent to minimize iterations. 
+                saRecordGroupList = m_lsafrSalesAgentFileRecordList.GroupBy(saFileRecord => (szSalesAgentName: saFileRecord.SalesAgentName, szSalesAgentEmailAddress: saFileRecord.SalesAgentEmailAddress));
 
                 foreach (var saRecordGroup in saRecordGroupList)
                 {
                     lcClientList = new ClientListBuilder();
 
-                    csaRecordGroupList = saRecordGroup.GroupBy(csaFileRecord => (szClientName: csaFileRecord.ClientName, szClientIdentifier: csaFileRecord.ClientIdentifier)).ToList();
+                    csaRecordGroupList = saRecordGroup.GroupBy(csaFileRecord => (szClientName: csaFileRecord.ClientName, szClientIdentifier: csaFileRecord.ClientIdentifier));
 
                     foreach (var csaRecordGroup in csaRecordGroupList)
                     {
@@ -244,14 +242,7 @@ namespace aiCorporation.NewImproved
                     lsaSalesAgentList.Add(saSalesAgent);
                 }
                 salReturnSalesAgentList = new SalesAgentList(lsaSalesAgentList.GetListOfSalesAgentObjects());
-            }
-            finally
-            {
-                baBankAccount = null;
-                cClient = null;
-                saSalesAgent = null;
-                lsaSalesAgentList = null;
-            }
+            
             return (salReturnSalesAgentList);
             // throw new NotImplementedException("You must implement this function");
         }
